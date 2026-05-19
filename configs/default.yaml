@@ -1,0 +1,41 @@
+# Biophysics Informed Segmentation - 2D UNet Config
+
+data:
+  data_dir: "./data/BraTS2023"
+  preprocessed_dir: "./data/preprocessed"  # .npy预处理目录
+  use_fast_loader: true  # true: 从.npy加载(需先运行preprocess.py), false: 从NIfTI加载
+  num_workers: 0
+  train_ratio: 0.7
+  val_ratio: 0.1
+  test_ratio: 0.2
+  slice_axis: 2  # axial slices (along z-axis)
+  input_size: [128, 128]
+  modalities: ["t1", "t1ce", "t2", "flair"]
+  num_channels: 4
+  num_classes: 4  # background, TC, WT, ET
+
+model:
+  backbone: "unet2d"
+  features: [32, 64, 128, 256, 512]
+  density_estimator:
+    hidden_dim: 128
+    num_layers: 2
+    feature_size: [8, 8]  # spatial size of intermediate features for density estimation
+
+training:
+  epochs: 100
+  batch_size: 4
+  lr: 3.0e-4
+  weight_decay: 1.0e-5
+  scheduler: "cosine"
+  amp: true  # RTX 3050 Ti 必须开启，节省约 40% 显存
+
+loss:
+  use_biophysics: true  # false: 仅Dice loss (baseline), true: Dice + PDE + BC
+  lambda_pde: 1.0
+  lambda_bc: 1.0
+  d_range: [0.02, 1.5]   # diffusion coefficient range (mm^2/day)
+  rho_range: [0.002, 0.2]  # proliferation rate range (1/day)
+
+seed: 42
+output_dir: "./outputs"
