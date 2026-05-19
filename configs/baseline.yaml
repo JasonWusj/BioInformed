@@ -11,7 +11,7 @@ data:
   val_ratio: 0.1
   test_ratio: 0.2
   slice_axis: 2
-  input_size: [128, 128]
+  input_size: [256, 256]
   modalities: ["t1", "t1ce", "t2", "flair"]
   num_channels: 4
   num_classes: 4
@@ -26,7 +26,7 @@ model:
 
 training:
   epochs: 100
-  batch_size: 16  # RTX 3080 10GB + AMP, baseline无density estimator显存更宽裕
+  batch_size: 32  # RTX 3080 10GB + AMP + 256x256, 显存充裕
   lr: 1.0e-3  # 线性缩放匹配大batch
   weight_decay: 1.0e-5
   scheduler: "cosine"

@@ -11,7 +11,7 @@ echo "  $(date)"
 echo "============================================================"
 
 # 检查GPU
-python -c "import torch; assert torch.cuda.is_available(), 'CUDA not available!'; print(f'GPU: {torch.cuda.get_device_name(0)}, VRAM: {torch.cuda.get_device_properties(0).total_mem / 1024**3:.1f} GB')"
+python -c "import torch; assert torch.cuda.is_available(), 'CUDA not available!'; print(f'GPU: {torch.cuda.get_device_name(0)}, VRAM: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.1f} GB')"
 
 # 检查预处理数据
 if [ ! -d "./data/preprocessed" ]; then

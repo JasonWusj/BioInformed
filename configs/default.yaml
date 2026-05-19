@@ -10,7 +10,7 @@ data:
   val_ratio: 0.1
   test_ratio: 0.2
   slice_axis: 2  # axial slices (along z-axis)
-  input_size: [128, 128]
+  input_size: [256, 256]
   modalities: ["t1", "t1ce", "t2", "flair"]
   num_channels: 4
   num_classes: 4  # background, TC, WT, ET
@@ -25,7 +25,7 @@ model:
 
 training:
   epochs: 100
-  batch_size: 16  # RTX 3080 10GB + AMP 可轻松支撑 batch=16 @ 128x128
+  batch_size: 32  # RTX 3080 10GB + AMP + 256 有大量余量
   lr: 1.0e-3  # 线性缩放: 3e-4 * (16/4) = 1.2e-3, 取1e-3更稳定
   weight_decay: 1.0e-5
   scheduler: "cosine"
