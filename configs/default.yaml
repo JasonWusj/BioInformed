@@ -21,7 +21,7 @@ model:
   density_estimator:
     hidden_dim: 128
     num_layers: 2
-    feature_size: [8, 8]  # spatial size of intermediate features for density estimation
+    feature_size: [32, 32]  # 8x8太小导致密度场退化为常数，增大以保留空间结构
 
 training:
   epochs: 100
@@ -34,8 +34,8 @@ training:
 
 loss:
   use_biophysics: true  # false: 仅Dice loss (baseline), true: Dice + PDE + BC
-  lambda_pde: 5.0
-  lambda_bc: 5.0
+  lambda_pde: 100.0
+  lambda_bc: 50.0
   d_range: [0.02, 1.5]   # diffusion coefficient range (mm^2/day)
   rho_range: [0.002, 0.2]  # proliferation rate range (1/day)
 
