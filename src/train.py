@@ -50,7 +50,7 @@ class BiophysicsSegModel(nn.Module):
 
 
 def train_one_epoch(model, loader, criterion, optimizer, scaler, device, use_amp,
-                    use_biophysics=True, epoch=0, log_interval=10):
+                    use_biophysics=True, epoch=0, log_interval=10, grad_clip=1.0):
     model.train()
     epoch_losses = {"dice": 0, "pde": 0, "bc": 0, "total": 0}
     num_batches = 0
@@ -73,10 +73,13 @@ def train_one_epoch(model, loader, criterion, optimizer, scaler, device, use_amp
 
         if use_amp:
             scaler.scale(loss).backward()
+            scaler.unscale_(optimizer)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip)
             scaler.step(optimizer)
             scaler.update()
         else:
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip)
             optimizer.step()
 
         for k in epoch_losses:
@@ -313,6 +316,10 @@ def main():
     scaler = GradScaler(enabled=use_amp)
     log(f"  AMP: {'enabled' if use_amp else 'disabled'}")
 
+    # Gradient clipping
+    grad_clip = cfg["training"].get("grad_clip", 1.0)
+    log(f"  Gradient clipping: max_norm={grad_clip}")
+
     # Output
     output_dir = Path(cfg["output_dir"])
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -348,7 +355,7 @@ def main():
 
         train_losses, epoch_time = train_one_epoch(
             model, train_loader, criterion, optimizer, scaler, device, use_amp,
-            use_biophysics, epoch=epoch, log_interval=10
+            use_biophysics, epoch=epoch, log_interval=10, grad_clip=grad_clip
         )
         val_losses, val_dice = validate(model, val_loader, criterion, device, use_biophysics)
 

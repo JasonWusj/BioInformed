@@ -25,10 +25,11 @@ model:
 
 training:
   epochs: 100
-  batch_size: 32  # RTX 3080 10GB + AMP + 256 有大量余量
-  lr: 1.0e-3  # 线性缩放: 3e-4 * (16/4) = 1.2e-3, 取1e-3更稳定
+  batch_size: 32
+  lr: 3.0e-4  # 256x256 + batch32 需要较低lr防止梯度爆炸
   weight_decay: 1.0e-5
   scheduler: "cosine"
+  grad_clip: 1.0  # gradient clipping max_norm
   amp: true  # 混合精度，节省显存并加速
 
 loss:
