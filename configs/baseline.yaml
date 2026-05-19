@@ -1,11 +1,12 @@
 # Baseline config: UNet2D with Dice loss only (no biophysics regularisation)
 # Compare with default.yaml to see the effect of PDE + BC losses
+# Optimized for RTX 3080 (10GB VRAM)
 
 data:
   data_dir: "./data/BraTS2023"
   preprocessed_dir: "./data/preprocessed"
   use_fast_loader: true
-  num_workers: 2
+  num_workers: 4  # RTX 3080服务器通常有足够CPU核心
   train_ratio: 0.7
   val_ratio: 0.1
   test_ratio: 0.2
@@ -25,8 +26,8 @@ model:
 
 training:
   epochs: 100
-  batch_size: 4
-  lr: 3.0e-4
+  batch_size: 16  # RTX 3080 10GB + AMP, baseline无density estimator显存更宽裕
+  lr: 1.0e-3  # 线性缩放匹配大batch
   weight_decay: 1.0e-5
   scheduler: "cosine"
   amp: true
